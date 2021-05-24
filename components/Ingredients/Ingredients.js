@@ -7,12 +7,21 @@ import Search from './Search';
 const Ingredients = ()=> {
   const [ userIngredients, setUserIngredients ] = useState([])
   
+  // handler called from form to update ingreds and pass it to the list
   const addIngHandler = (ingredient) => {
-    setUserIngredients(prevIngredients => [
-      ...prevIngredients, 
-      { id: Math.random().toString(), ...ingredient}
-    
-    ])
+    // use fetch for a POST message
+    fetch('https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json', {
+      method: 'POST',
+      body: JSON.stringify(ingredient),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(response => {
+      return response.json()
+    }).then(responseData => {
+      setUserIngredients(prevIngredients => [
+        ...prevIngredients, 
+        { id: responseData.name, ...ingredient }
+      ])
+    })
   }
 
   return (
