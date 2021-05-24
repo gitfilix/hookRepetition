@@ -13,7 +13,7 @@ const Search = React.memo(props => {
       if (enteredFilter === inputRef.current.value) {
         const query = enteredFilter.length === 0 
           ? '' 
-          : `?orderBy="title"&equalTo="${enteredFilter}"`;
+          : `?orderBy="title"&equalTo="${enteredFilter}"`
         fetch('https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json' + query)
           .then(response => response.json())
           .then(responseData => {
