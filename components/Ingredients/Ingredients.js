@@ -46,13 +46,24 @@ const Ingredients = ()=> {
     })
   }
 
+  const removeIngHandler = (ingredientId) => {
+    fetch(`https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`, {
+      method: 'DELETE',
+    })
+    .then(response => {
+      setUserIngredients(prevIngredients => 
+        prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
+      )
+    })
+  }
+
   return (
     <div className="App">
       <IngredientForm onAddIngredient={addIngHandler} />
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList ingredients={userIngredients} onRemoveItem={() => {}}/>
+        <IngredientList ingredients={userIngredients} onRemoveItem={removeIngHandler}/>
         {/* Need to add list here! */}
       </section>
     </div>
