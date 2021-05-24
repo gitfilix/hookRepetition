@@ -22,3 +22,5 @@ useEffect
 1. executes: After every render cycle!
 2. [] empty dependency array acts like componentDidMount onliy runs ONCE (after first render)
 
+useReducer:
+when working with useReducer, React will re-render the component wehnever your reducer returns a new state

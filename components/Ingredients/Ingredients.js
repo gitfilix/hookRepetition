@@ -1,14 +1,31 @@
-import React, {useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useReducer } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList'
 import ErrorModal from '../UI/ErrorModal'
 import Search from './Search';
 
+const ingReducer = (currentIngredients, action) => {
+    switch(action.type) {
+      case 'SET':
+        return action.ingredients
+      case 'ADD':
+        return [...currentIngredients, action.ingredient]
+      case 'DELETE':
+        return currentIngredients.filter(ing => ing.id !== action.id)
+      default:
+        throw new Error('Reducer Error: Should not get there! no case match ')
+    }
+}
+
 const Ingredients = ()=> {
-  const [ userIngredients, setUserIngredients ] = useState([])
+  // reducer init: state (here userIngredients, dispatch) 
+  // useReducer: reducer function, initial state: here []
+  const [ userIngredients, dispatch ] = useReducer(ingReducer, [])
+  // const [ userIngredients, setUserIngredients ] = useState([])
   const [ isLoading, setIsLoading ] = useState(false)
   const [ error, setIsError ] = useState()
+
   /*
   useEffect(() => {
     // get Data
@@ -29,7 +46,8 @@ const Ingredients = ()=> {
 */
   // for search component
   const filteredIngredientsHandler = useCallback(fileredIngredients => {
-    setUserIngredients(fileredIngredients)
+    // setUserIngredients(fileredIngredients)
+    dispatch({type: 'SET', ingredients: fileredIngredients})
   }, [])
 
   // handler called from form to update ingreds and pass it to the list
@@ -44,10 +62,11 @@ const Ingredients = ()=> {
       setIsLoading(false)
       return response.json()
     }).then(responseData => {
-      setUserIngredients(prevIngredients => [
-        ...prevIngredients, 
-        { id: responseData.name, ...ingredient }
-      ])
+      // setUserIngredients(prevIngredients => [
+      // ...prevIngredients, 
+      // { id: responseData.name, ...ingredient }
+      // ])
+      dispatch({ type: 'ADD', ingredient: { id: responseData.name, ...ingredient }})
     })
   }
 
@@ -58,17 +77,19 @@ const Ingredients = ()=> {
     })
     .then(response => {
       setIsLoading(false)
-      setUserIngredients(prevIngredients => 
-        prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
-      )
+      // setUserIngredients(prevIngredients => 
+        // prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
+      // )
+      dispatch({ type: 'DELETE', id: ingredientId })
+      
     }).catch(error => {
       setIsError('something went wrong')
+      setIsLoading(false)
     }) 
   }
 
   const clearError = () => {
     setIsError(null)
-    setIsLoading(false)
   }
 
   return (
