@@ -1,6 +1,11 @@
 flx notes
 
+useState
+
 useState always returns an array with two elements: 
-1. element: state snapshot (current state /or updated state)
-2. element: function for updateing this state
+1. element: state snapshot (current state /or updated state) (->pointer at state)
+2. element: A Function for updateing this state 
+
+the state will be managed by react behind the scenes
+
 
