@@ -9,3 +9,16 @@ useState always returns an array with two elements:
 the state will be managed by react behind the scenes
 
 
+rules:
+use on the root-level at a component. 
+(not allowed in a for loop, in a if statement below)
+
+
+https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/
+
+
+useEffect
+
+1. executes: After every render cycle!
+2. [] empty dependency array acts like componentDidMount onliy runs ONCE (after first render)
+
