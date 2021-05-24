@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList'
@@ -6,7 +6,7 @@ import Search from './Search';
 
 const Ingredients = ()=> {
   const [ userIngredients, setUserIngredients ] = useState([])
-  
+  /*
   useEffect(() => {
     // get Data
     fetch('https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json')
@@ -22,6 +22,11 @@ const Ingredients = ()=> {
       }
       setUserIngredients(loadedIngredients)
     })
+  }, [])
+*/
+  // for search component
+  const filteredIngredientsHandler = useCallback(fileredIngredients => {
+    setUserIngredients(fileredIngredients)
   }, [])
 
   // handler called from form to update ingreds and pass it to the list
@@ -46,7 +51,7 @@ const Ingredients = ()=> {
       <IngredientForm onAddIngredient={addIngHandler} />
 
       <section>
-        <Search />
+        <Search onLoadIngredients={filteredIngredientsHandler} />
         <IngredientList ingredients={userIngredients} onRemoveItem={() => {}}/>
         {/* Need to add list here! */}
       </section>
