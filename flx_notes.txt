@@ -1,0 +1,6 @@
+flx notes
+
+useState always returns an array with two elements: 
+1. element: state snapshot (current state /or updated state)
+2. element: function for updateing this state
+
