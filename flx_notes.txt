@@ -24,3 +24,24 @@ useEffect
 
 useReducer:
 when working with useReducer, React will re-render the component wehnever your reducer returns a new state
+
+const httpReducer = (prevHttpState, action) => {
+  switch(action.type) {
+    case 'SEND':
+      return { loading: true, error: null }
+    case 'RESPONSE':
+      return { ...prevHttpState, loading: false }   <- here: copy the return state - so its updated
+    case 'ERROR':
+      return { loading: false, error: action.errorMessage }
+    case 'CLEAR':
+      return { ...prevHttpState, error: null }
+      default: throw new Error('httpReducer unknown Error - should not be reached.')
+  }
+}
+
+called by:
+// [state, dispatch fn] = useReducer(reducername {initial state: here objc}) 
+const [ httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, error: null})
+
+
+useContext()
