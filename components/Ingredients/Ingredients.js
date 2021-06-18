@@ -4,6 +4,7 @@ import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList'
 import ErrorModal from '../UI/ErrorModal'
 import Search from './Search';
+import useHttp from '../hooks/http';
 
 const ingReducer = (currentIngredients, action) => {
   switch(action.type) {
@@ -18,25 +19,14 @@ const ingReducer = (currentIngredients, action) => {
   }
 }
 
-const httpReducer = (prevHttpState, action) => {
-  switch(action.type) {
-    case 'SEND':
-      return { loading: true, error: null }
-    case 'RESPONSE':
-      return { ...prevHttpState, loading: false }
-    case 'ERROR':
-      return { loading: false, error: action.errorMessage }
-    case 'CLEAR':
-      return { ...prevHttpState, error: null }
-      default: throw new Error('httpReducer unknown Error - should not be reached.')
-  }
-}
 
 const Ingredients = ()=> {
+  const [ userIngredients, dispatch ] = useReducer(ingReducer, [])
+  const { isLoading, error, data, sendRequest } = useHttp()
+
   // reducer init: state (here userIngredients, dispatch) 
   // useReducer: reducer function, initial state: here []
-  const [ userIngredients, dispatch ] = useReducer(ingReducer, [])
-  const [ httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, error: null})
+  // const [ httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, error: null})
   // const [ isLoading, setIsLoading ] = useState(false)
   // const [ error, setIsError ] = useState()
 
@@ -50,7 +40,7 @@ const Ingredients = ()=> {
   // now with useCallback! 
   const addIngHandler = useCallback((ingredient) => {
     // useHTTP reducer here:
-    dispatchHttp({ type: 'SEND' })
+   /* dispatchHttp({ type: 'SEND' })
     // setIsLoading(true)
     // use fetch for a POST message to POST data into Firebase
     fetch('https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json', {
@@ -68,31 +58,17 @@ const Ingredients = ()=> {
       // ])
       dispatch({ type: 'ADD', ingredient: { id: responseData.name, ...ingredient }})
     })
+    */
   }, [])
 
   const removeIngHandler = useCallback((ingredientId) => {
-    dispatchHttp({type: 'SEND'})
-    // setIsLoading(true)
-    fetch(`https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`, {
-      method: 'DELETE',
-    })
-    .then(response => {
-      dispatchHttp({type: 'RESPONSE'})
-      // setIsLoading(false)
-      // setUserIngredients(prevIngredients => 
-        // prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
-      // )
-      dispatch({ type: 'DELETE', id: ingredientId })
-      
-    }).catch(error => {
-      dispatchHttp({ type: 'ERROR', errorMessage: 'Something when wrong here' })
-      // setIsError('something went wrong')
-      // setIsLoading(false)
-    }) 
-  }, [])
+    sendRequest(`https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`, 
+    'DELETE'
+    )
+  }, [sendRequest])
 
   const clearError = useCallback(() => {
-    dispatchHttp({ type: 'CLEAR' })
+    // dispatchHttp({ type: 'CLEAR' })
     // setIsError(null)
   }, [])
 
@@ -108,10 +84,12 @@ const Ingredients = ()=> {
 
   return (
     <div className="App">
-      {httpState.error && <ErrorModal onClose={clearError}>{httpState.error}</ErrorModal>}
+      {error && (
+        <ErrorModal onClose={clearError}>{error}</ErrorModal>
+        )}
       <IngredientForm 
         onAddIngredient={addIngHandler} 
-        loading={httpState.loading} />
+        loading={isLoading} />
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
