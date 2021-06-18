@@ -22,23 +22,31 @@ const ingReducer = (currentIngredients, action) => {
 
 const Ingredients = ()=> {
   const [ userIngredients, dispatch ] = useReducer(ingReducer, [])
-  const { isLoading, error, data, sendRequest } = useHttp()
+  const { isLoading, error, data, sendRequest, reqExtra, reqIdentifier } = useHttp()
 
-  // reducer init: state (here userIngredients, dispatch) 
-  // useReducer: reducer function, initial state: here []
-  // const [ httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, error: null})
-  // const [ isLoading, setIsLoading ] = useState(false)
-  // const [ error, setIsError ] = useState()
+  useEffect(() => {
+    if (!isLoading && !error && reqIdentifier === 'REMOVE_INGREDIENT') {
+      dispatch({ type: 'DELETE', id: reqExtra })
+    } else if (!isLoading && !error && reqIdentifier === 'ADD_INGREDIENT') {
+      dispatch({ type: 'ADD', ingredient: { id: data.name, ...reqExtra } })
+    }
+
+  }, [data, reqExtra, reqIdentifier, isLoading])
 
   // for search component
   const filteredIngredientsHandler = useCallback(fileredIngredients => {
-    // setUserIngredients(fileredIngredients)
-    dispatch({type: 'SET', ingredients: fileredIngredients})
+    dispatch({type: 'SET', ingredients: fileredIngredients })
   }, [])
 
   // handler called from form to update ingreds and pass it to the list
   // now with useCallback! 
   const addIngHandler = useCallback((ingredient) => {
+    sendRequest('https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json', 
+    'POST',
+    JSON.stringify(ingredient),
+    ingredient,
+    'ADD_INGREDIENT'
+    )
     // useHTTP reducer here:
    /* dispatchHttp({ type: 'SEND' })
     // setIsLoading(true)
@@ -63,7 +71,10 @@ const Ingredients = ()=> {
 
   const removeIngHandler = useCallback((ingredientId) => {
     sendRequest(`https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`, 
-    'DELETE'
+    'DELETE',
+    null, 
+    ingredientId,
+    'REMOVE_INGREDIENT'
     )
   }, [sendRequest])
 
