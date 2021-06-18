@@ -4,6 +4,7 @@ import Card from '../UI/Card';
 import LoadingIndicator from '../UI/LoadingIndicator'
 import './IngredientForm.css';
 
+// react.memo remembers if this component should re-render
 const IngredientForm = React.memo(props => {
   // const [inputState, setInputState] = useState({title: '', amount: ''})
   const [enteredTitle, setEnteredTitle] = useState('')

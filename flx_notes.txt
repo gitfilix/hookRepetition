@@ -45,3 +45,20 @@ const [ httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, err
 
 
 useContext()
+
+
+useCallback() 
+is for saving a function that doesnt change. 
+
+
+useMemo()
+stores a value. memorizing components. Returns a memoized value.
+
+
+
+
+
+
+
+
+

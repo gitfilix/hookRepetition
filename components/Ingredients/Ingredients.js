@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer, useMemo } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList'
@@ -47,9 +47,10 @@ const Ingredients = ()=> {
   }, [])
 
   // handler called from form to update ingreds and pass it to the list
-  const addIngHandler = (ingredient) => {
+  // now with useCallback! 
+  const addIngHandler = useCallback((ingredient) => {
     // useHTTP reducer here:
-    dispatchHttp({type: 'SEND'})
+    dispatchHttp({ type: 'SEND' })
     // setIsLoading(true)
     // use fetch for a POST message to POST data into Firebase
     fetch('https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json', {
@@ -67,9 +68,9 @@ const Ingredients = ()=> {
       // ])
       dispatch({ type: 'ADD', ingredient: { id: responseData.name, ...ingredient }})
     })
-  }
+  }, [])
 
-  const removeIngHandler = (ingredientId) => {
+  const removeIngHandler = useCallback((ingredientId) => {
     dispatchHttp({type: 'SEND'})
     // setIsLoading(true)
     fetch(`https://hookrepetition-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${ingredientId}.json`, {
@@ -88,12 +89,22 @@ const Ingredients = ()=> {
       // setIsError('something went wrong')
       // setIsLoading(false)
     }) 
-  }
+  }, [])
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatchHttp({ type: 'CLEAR' })
     // setIsError(null)
-  }
+  }, [])
+
+  //use MEMO
+  const ingredientList = useMemo(() => {
+    return (
+      <IngredientList
+        ingredients={userIngredients}
+        onRemoveItem={removeIngHandler}
+      />
+    )
+  }, [userIngredients,removeIngHandler])
 
   return (
     <div className="App">
@@ -104,7 +115,7 @@ const Ingredients = ()=> {
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList ingredients={userIngredients} onRemoveItem={removeIngHandler}/>
+        { ingredientList }
       </section>
     </div>
   );
