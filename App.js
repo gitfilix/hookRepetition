@@ -7,10 +7,11 @@ import { AuthContext } from './context/auth-context'
 
 
 const App = props => {
+  // listen to context by using this
   const authContext = useContext(AuthContext)
-  // not authenticated
+  // not authenticated: defalut: Auth component
   let appContent = <Auth />
-  
+  // if authenticated -> load ingrediaents
   if (authContext.isAuth) {
     appContent = <Ingredients />
   }
